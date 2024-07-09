@@ -1,0 +1,164 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: https://enfint.ai/config_schema.yaml
+title: Configuration schema
+description: Formal schema for configuration objects of AI Agent
+type: object
+$ref: '#/$defs/ConfigObject'
+$defs:
+  ConfigObject:
+    type: object
+    oneOf:
+      - $ref: '#/$defs/SkillGroup'
+      - $ref: '#/$defs/Skill'
+  SkillGroup:
+    type: object
+    additionalProperties: false
+    required: [kind, name]
+    properties:
+      kind:
+        enum: [SkillGroup]
+      name:
+        type: string
+      description:
+        type: string
+      skills:
+        type: array
+        items:
+          oneOf:
+            - type: string
+              description: path to Skill config
+            - $ref: '#/$defs/Skill'
+      dependencies:
+        type: array
+        items:
+          type: string
+  Skill:
+    type: object
+    additionalProperties: false
+    required: [kind, name, description, implementation]
+    properties:
+      kind:
+        enum: [Skill]
+      name:
+        type: string
+      description:
+        type: string
+      agent_instruction:
+        type: [string, 'null']
+        default: "Use call_skill for \"{name}\" immediately."
+      title:
+        type: string
+      option_template:
+        type: [string, 'null']
+        default: "Choose one of the following:"
+      answer_template:
+        type: [string, 'null']
+        default: "The result is:\n{answer_md}"
+      line_template:
+        type: string
+      line_option_template:
+        type: string
+      single_repr_template:
+        type: string
+      confirmation_template:
+        type: string
+      is_simple:
+        type: boolean
+        default: false
+      confirmation_is_mandatory:
+        type: boolean
+        default: false
+      public_available:
+        type: boolean
+        default: true
+      final_llm_comment_required:
+        type: boolean
+        default: false
+      option_llm_comment_required:
+        type: boolean
+        default: false
+      email_confirmation_required:
+        type: boolean
+        default: false
+      email_confirmation_subject:
+        type: string
+      email_confirmation_reason:
+        type: string
+      inputs:
+        type: array
+        items:
+          $ref: '#/$defs/InputEntity'
+      regulations:
+        type: array
+        items:
+          type: string
+      implementation:
+        oneOf:
+          - type: string
+            description: python callable in the form of 'module.callable'
+          - $ref: '#/$defs/SkillImplementation'
+      format_email_implementation:
+        oneOf:
+          - type: string
+            description: python callable in the form of 'module.callable'
+          - $ref: '#/$defs/SkillImplementation'
+  InputEntity:
+    type: object
+    additionalProperties: false
+    required: [name, description, dtype]
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+      dtype:
+        type: string
+      target_skill:
+        type: string
+      info_skill:
+        type: string
+      should_be_auto:
+        type: boolean
+        default: false
+      agent_instruction:
+        type: string
+      data_volume:
+        enum:
+          - ONE
+          - MANY
+        default: ONE
+      ignore_imaginary:
+        type: boolean
+        default: false
+      let_tool_generate:
+        type: boolean
+        default: false
+      optional:
+        type: boolean
+        default: false
+      is_system:
+        type: boolean
+        default: false
+      sets_by_llm:
+        type: boolean
+        default: true
+      regulations:
+        type: array
+        items:
+          type: string
+  SkillImplementation:
+    oneOf:
+      - $ref: '#/$defs/PythonCallable'
+  PythonCallable:
+    type: object
+    additionalProperties: false
+    required: [kind, name]
+    properties:
+      kind:
+        enum: [PythonCallable]
+      module:
+        type: string
+      callable:
+        type: string
+
+

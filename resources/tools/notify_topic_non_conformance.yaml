@@ -1,0 +1,4 @@
+kind: Tool
+name: verify_topic_compliance
+description: Notify if human's query not related to logistics or delivery related topics
+message: Sorry, I can only answer questions related to the logistics products and services

@@ -1,0 +1,58 @@
+kind: SkillGroup
+name: logistics_shipments_v2
+description: skill group for logistics
+dependencies:
+- submodules/logistics_shipments_v2_impl_test.py
+skills:
+- kind: Skill
+  name: RetrieveShipmentsList
+  description: Provides list of shipments and parcels of the Human. For each shipment returns shipment numberm parcel number and status.
+  title: List of shipments
+  option_template: "Below are the list of your shipments, please choose one of
+    the following:\n{options_md}"
+  answer_template: '{answer_md}'
+  line_template: '{line_num}. {shipment_number}  {parcel_no} in status {status}'
+  line_option_template: '{line_num}. {shipment_number} {status}'
+  is_simple: true
+  final_llm_comment_required: true
+  inputs:
+  - name: client_id
+    description: ID of the client to retrieve the information for.
+    dtype: str
+    is_system: true
+  implementation: logistics_shipments_v2_impl_test.retrieve_list_of_shipments
+- kind: Skill
+  name: RetrieveDeliveryTime
+  description: Retrieve date and time when shipment or parcel will be delivered into distantaion for given parcel number. Return approximatly timeframe when shipment or parcel will arrive at distanation address.
+  title: Shipment or parcel delivery time
+  option_template:
+  answer_template:
+  confirmation_template: 'Just to confirm, you are asking of the followinf parcel: {parcel_no} , correct?'
+#  answer_template: '{answer_md}'
+#  line_template: '{line_num}. {shipment_number} {parcel_no} in status {status}'
+#  line_option_template: '{line_num}. {shipment_number} {parcel_no} {status}'
+  is_simple: true
+  inputs:
+  - name: client_id
+    description: ID of the client to retrieve the information for.
+    dtype: str
+    is_system: true
+  - name: parcel_no
+    description: Number of parcel
+    dtype: str
+    target_skill: RetrieveParcelNumbers
+  implementation: logistics_shipments_v2_impl_test.retrieve_delivery_time
+- kind: Skill
+  name: RetrieveParcelNumbers
+  description: Retrieve Parcel Numbers and parcel IDs.
+  title: INTERNAL-RetrieveParcelNumbers
+  option_template: 'Specify the parcel number:'
+  line_template: '{parcel_no}'
+  line_option_template: '{line_num}. {parcel_no}'
+  public_available: false
+  inputs:
+  - name: client_id
+    description: ID of the client to retrieve the data about parcels for.
+    dtype: str
+    is_system: true
+  implementation: logistics_shipments_v2_impl_test.internal_retrieve_parcel_numbers
