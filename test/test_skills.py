@@ -5,13 +5,12 @@ import unittest
 from pathlib import Path
 
 import dotenv
-from logistics_shipments_v2_impl_test import retrieve_list_of_shipments
 
 
 class TestSkills(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
         dotenv.load_dotenv()
-        # sys.path.append(str(Path(__file__).parent.parent / "src"))
+        sys.path.append(str(Path(__file__).parent.parent / "src"))
         importlib.import_module("_init_db")
         self.kwargs = {"client_id": "C0001"}
 
@@ -19,6 +18,7 @@ class TestSkills(unittest.IsolatedAsyncioTestCase):
         pass
 
     async def test_retrieve_list_of_shipments(self):
+        from logistics_shipments_v2_impl_test import retrieve_list_of_shipments
         result = await retrieve_list_of_shipments(**self.kwargs)
         self.assertIsInstance(result, dict)
         self.assertTrue('result_data' in result)
